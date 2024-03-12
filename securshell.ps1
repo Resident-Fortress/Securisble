@@ -2,6 +2,15 @@
 # For use in Windows NT 10.0 and above. I cannot guarantee full functionality with older pieces of system software.
 # Updated infrequently. Commands may damage your system I am not liable for any damages done to machines. 
 
+# Task 0: Download all my software (Later retrieve a backup and send to 2nd NVMe drive)
+winget install -e --id Google.Chrome
+winget install -e --id Microsoft.VisualStudio.2022.Enterprise.Preview
+winget install -e --id VSCodium.VSCodium
+winget install -e --id Valve.Steam
+winget install -e --id Overwolf.CurseForge
+winget install -e --id Microsoft.Office
+
+
 # Task 1: Disable the Guest account (Disable-LocalUser)
 Disable-LocalUser -Name "Guest"
 
