@@ -2,7 +2,10 @@
 # For use in Windows NT 10.0 and above. I cannot guarantee full functionality with older pieces of system software.
 # Updated infrequently. Commands may damage your system I am not liable for any damages done to machines. 
 
-# Task 0: Download all my software (Later retrieve a backup and send to 2nd NVMe drive)
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
+
+
+
 winget install -e --id Google.Chrome
 winget install -e --id Microsoft.VisualStudio.2022.Enterprise.Preview
 winget install -e --id VSCodium.VSCodium
@@ -11,22 +14,17 @@ winget install -e --id Overwolf.CurseForge
 winget install -e --id Microsoft.Office
 
 
-# Task 1: Disable the Guest account (Disable-LocalUser)
 Disable-LocalUser -Name "Guest"
 
-# Task 2: Enable the Windows Update Service (Set-Service, Start-Service)
 Set-Service -Name "wuauserv" -StartupType "Automatic"
 Start-Service -Name "wuauserv"
 
-# Task 2: Enable the Windows Update Service (Set-Service, Start-Service)
 Set-Service -Name "wuauserv" -StartupType "Automatic"
 Start-Service -Name "wuauserv"
 
-# Task 3: Disable the Microsoft FTP Service (Set-Service)
 Set-Service -Name "ftpsvc" -Status "Stopped"
 Set-Service -Name "ftpsvc" -StartupType "Disabled"
 
-#Task 4: Registry Changes (reg add)
 powershell.exe Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -norestart
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\mrxsmb10" /v Start /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v SMB1 /t REG_DWORD /d 0 /f
@@ -59,7 +57,6 @@ reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AmbientAuthenticationInPrivat
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AudioCaptureAllowed" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AudioSandboxEnabled" /t REG_DWORD /d 1 /f
 
-# Task 5: Audit Policy (AuditPol)
 Auditpol /set /subcategory:"Security Group Management" /success:enable /failure:enable
 Auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
 Auditpol /set /subcategory:"Logoff" /success:enable /failure:disable
@@ -75,20 +72,16 @@ Auditpol /set /subcategory:"System Integrity" /success:enable /failure:enable
 auditpol /set /category:"System","Account Management","Account Logon","Logon/Logoff","Policy Change" /failure:enable /success:enable  
 auditpol /set /category:"DS Access","Object Access" /failure:enable
 
-#Task 6: Enable Windows Firewall (Set-NetFirewallProfile)
 Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True
 
-#Task 7: Disable Remote Assistance (Get-ItemProperty)
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp" -Value 0
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp"
 
-#Task 8: Misc (Set-ItemProperty)
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "AutoShareWks" -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "AutoShareServer" -Value 0
 Restart-Service -Name 'LanmanServer'
 
-#Task 9: Firewall Configuration (netsh)
 netsh Advfirewall set allprofiles state on
 netsh advfirewall firewall add rule name="Block appvlp.exe netconns" program="C:\Program Files (x86)\Microsoft Office\root\client\AppVLP.exe" protocol=tcp dir=out enable=yes action=block profile=any
 netsh advfirewall firewall add rule name="Block appvlp.exe netconns" program="C:\Program Files\Microsoft Office\root\client\AppVLP.exe" protocol=tcp dir=out enable=yes action=block profile=any
@@ -145,7 +138,6 @@ netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%
 netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%systemroot%\SysWOW64\wscript.exe" protocol=tcp dir=out enable=yes action=block profile=any
 netsh Advfirewall set allprofiles state on
 
-# Task 9: Updates (Windows Update)
 Install-Module PSWindowsUpdate
 Add-WUServiceManager -MicrosoftUpdate
 Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot | Out-File "C:\($env.computername-Get-Date -f yyyy-MM-dd)-MSUpdates.log" -Force
