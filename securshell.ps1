@@ -2,10 +2,11 @@
 # For use in Windows NT 10.0 and above. I cannot guarantee full functionality with older pieces of system software.
 # Updated infrequently. Commands may damage your system I am not liable for any damages done to machines. 
 
+# Task 1 added High Power settings
 powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
 powercfg /s SCHEME_MIN
 
-
+# Task 2 install main programs via WinGet
 winget install -e --id Google.Chrome
 winget install -e --id Microsoft.VisualStudio.2022.Enterprise.Preview
 winget install -e --id VSCodium.VSCodium
@@ -14,18 +15,18 @@ winget install -e --id Overwolf.CurseForge
 winget install -e --id Microsoft.Office
 winget install -e --id Rclone.Rclone
 
+# Task 3 Disable any accounts not needed
 Disable-LocalUser -Name "Guest"
 
-Set-Service -Name "wuauserv" -StartupType "Automatic"
-Start-Service -Name "wuauserv"
+# Task 4 Set services to either stop or start
+Set-Service -Name "wuauserv" -StartupType "Automatic" #  Windows Update service automatically begins on start-up 
+Start-Service -Name "wuauserv" # Windows Update Service start 
 
-Set-Service -Name "wuauserv" -StartupType "Automatic"
-Start-Service -Name "wuauserv"
+#Set-Service -Name "ftpsvc" -Status "Stopped" // Not needed in standard Windows that doesn't run IIS
+#Set-Service -Name "ftpsvc" -StartupType "Disabled" // Not needed in standard Windows that doesn't run IIS
 
-Set-Service -Name "ftpsvc" -Status "Stopped"
-Set-Service -Name "ftpsvc" -StartupType "Disabled"
-
-powershell.exe Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -norestart
+# Task 5 Registry edits
+powershell.exe Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -norestart 
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\mrxsmb10" /v Start /t REG_DWORD /d 4 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" /v SMB1 /t REG_DWORD /d 0 /f
 reg add "HKLM\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters" /v RestrictNullSessAccess /t REG_DWORD /d 1 /f
@@ -57,6 +58,7 @@ reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AmbientAuthenticationInPrivat
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AudioCaptureAllowed" /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Google\Chrome" /v "AudioSandboxEnabled" /t REG_DWORD /d 1 /f
 
+# Task 6 Auditiing of system events that are critical
 Auditpol /set /subcategory:"Security Group Management" /success:enable /failure:enable
 Auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
 Auditpol /set /subcategory:"Logoff" /success:enable /failure:disable
@@ -72,16 +74,20 @@ Auditpol /set /subcategory:"System Integrity" /success:enable /failure:enable
 auditpol /set /category:"System","Account Management","Account Logon","Logon/Logoff","Policy Change" /failure:enable /success:enable  
 auditpol /set /category:"DS Access","Object Access" /failure:enable
 
+# Task 7 Set firewall profiles to true
 Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True
 
+# Task 8 Disable Remote Assistance
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp" -Value 0
 Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services" -Name "fAllowToGetHelp"
 
+# Task 9 Disable LanmanServer
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "AutoShareWks" -Value 0
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "AutoShareServer" -Value 0
 Restart-Service -Name 'LanmanServer'
 
+# Task 10 Set firewall rules 
 netsh Advfirewall set allprofiles state on
 netsh advfirewall firewall add rule name="Block appvlp.exe netconns" program="C:\Program Files (x86)\Microsoft Office\root\client\AppVLP.exe" protocol=tcp dir=out enable=yes action=block profile=any
 netsh advfirewall firewall add rule name="Block appvlp.exe netconns" program="C:\Program Files\Microsoft Office\root\client\AppVLP.exe" protocol=tcp dir=out enable=yes action=block profile=any
@@ -138,6 +144,10 @@ netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%
 netsh advfirewall firewall add rule name="Block wscript.exe netconns" program="%systemroot%\SysWOW64\wscript.exe" protocol=tcp dir=out enable=yes action=block profile=any
 netsh Advfirewall set allprofiles state on
 
+# Task 11 Install the MS Powershell updater for easier and quicker method of updateing windows
 Install-Module PSWindowsUpdate
 Add-WUServiceManager -MicrosoftUpdate
 Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot | Out-File "C:\($env.computername-Get-Date -f yyyy-MM-dd)-MSUpdates.log" -Force
+
+
+# TO-DO Add rclone or other method of sending a restore point. Add file history and backup and restore functionality into script and offload to either secondary drive or network drive. 
