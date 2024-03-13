@@ -12,7 +12,7 @@ winget install -e --id VSCodium.VSCodium
 winget install -e --id Valve.Steam
 winget install -e --id Overwolf.CurseForge
 winget install -e --id Microsoft.Office
-
+winget install -e --id Rclone.Rclone
 
 Disable-LocalUser -Name "Guest"
 
