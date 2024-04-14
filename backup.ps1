@@ -67,5 +67,4 @@ $appData = gc env:localAPPDATA
 	Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\PrinterPorts" | Export-Clixml "$destination\RegistryInformation\printers2.reg"
 	Write-Host -ForegroundColor Green "Backing up Printers3"
 	Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Windows" | Export-Clixml "$destination\RegistryInformation\printers3.reg"
-    
-	write-host -ForegroundColor green "Backup complete!"
+    write-host -ForegroundColor green "Backup complete!"
