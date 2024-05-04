@@ -5,9 +5,7 @@
 # Task 1 Clean image restore point
 Checkpoint-Computer -Description "Clean-Installation"
 
-# Task 2 added High Power settings
-powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61
-powercfg /s SCHEME_MIN
+# Task 2 Add Windows Features/Disable Windows Features
 
 # Task 3 install main programs via WinGet
 winget install -e --id Google.Chrome
@@ -17,6 +15,8 @@ winget install -e --id Valve.Steam
 winget install -e --id Overwolf.CurseForge
 winget install -e --id Microsoft.Office
 winget install -e --id Rclone.Rclone
+winget install -e --id SublimeHQ.SublimeText.4
+winget install -e --id PuTTY.PuTTY
 
 # Task 4 Disable any accounts not needed
 Disable-LocalUser -Name "Guest"
