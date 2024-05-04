@@ -2,7 +2,10 @@
 # For use in Windows NT 10.0 and above. I cannot guarantee full functionality with older pieces of system software.
 # Updated infrequently. Commands may damage your system I am not liable for any damages done to machines. 
 
-# Task 1 Clean image restore point
+# Task 1 Set permissions and checkpoint the begining.
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine
+Enable-ComputerRestore -Drive "C:" 
+Enable-ComputerRestore -Drive "D:" 
 Checkpoint-Computer -Description "Clean-Installation"
 
 # Task 2 Add Windows Features/Disable Windows Features
@@ -17,6 +20,7 @@ winget install -e --id Microsoft.Office
 winget install -e --id Rclone.Rclone
 winget install -e --id SublimeHQ.SublimeText.4
 winget install -e --id PuTTY.PuTTY
+winget install -e --id WinDirStat.WinDirStat
 
 # Task 4 Disable any accounts not needed
 Disable-LocalUser -Name "Guest"
@@ -152,5 +156,6 @@ Install-Module PSWindowsUpdate
 Add-WUServiceManager -MicrosoftUpdate
 Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot | Out-File "C:\($env.computername-Get-Date -f yyyy-MM-dd)-MSUpdates.log" -Force
 
-# Task 13 The machine creates a restore point after the machine is ready
+# Task 13 The machine creates a restore point after the machine is ready and lock powershell execution
 Checkpoint-Computer -Description "Post Script"
+Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope LocalMachine
