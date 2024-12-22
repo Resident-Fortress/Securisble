@@ -15,7 +15,6 @@ winget install -e --id Google.Chrome
 winget install -e --id Microsoft.VisualStudio.2022.Enterprise.Preview
 winget install -e --id VSCodium.VSCodium
 winget install -e --id Valve.Steam
-winget install -e --id Overwolf.CurseForge
 winget install -e --id Microsoft.Office
 winget install -e --id Rclone.Rclone
 winget install -e --id SublimeHQ.SublimeText.4
